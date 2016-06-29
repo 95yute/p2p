@@ -254,12 +254,14 @@ angular.module('AppController', [])
 						for ( var x in $scope.productInfo) {
 							if (x === "proEarningRate") {
 								var rateStr = "";
-								for (var y = 0; y < $scope.productInfo.proEarningRate.length; y++) {
-									rateStr += '"'
-											+ $scope.productInfo.proEarningRate[y].month
-											+ '":'
-											+ $scope.productInfo.proEarningRate[y].incomeRate
-											+ ","
+								if ($scope.productInfo.proEarningRate != null){
+									for (var y = 0; y < $scope.productInfo.proEarningRate.length; y++) {
+									  	  rateStr += '"'
+									  	  		 + $scope.productInfo.proEarningRate[y].month
+									  	  		 + '":'
+									  	  		 + $scope.productInfo.proEarningRate[y].incomeRate
+									  	  		 + ","
+									  }
 								}
 								rateStr = '{'
 										+ rateStr.substr(0, rateStr.length - 1)
@@ -294,7 +296,7 @@ angular.module('AppController', [])
 						ProductService.getRatesById(str).success(
 								function(response) {
 									if (response.status == 1) {
-										$scope.rates = response.data;
+										$scope.productInfo.proEarningRate = response.data;
 										var options = {
 											backdrop : "static"
 										};

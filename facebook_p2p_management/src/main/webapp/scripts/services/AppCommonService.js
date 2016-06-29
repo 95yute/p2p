@@ -103,11 +103,13 @@ angular
 							return $http.post(option.url.api_product
 									+ 'findRates', $str, option.header);
 						},
+						//facebook_p2p_action/product/findRates
 						// 提交修改操作
 						commitProduct : function($str) {
 							return $http.post(option.url.api_product
 									+ 'modifyProduct', $str, option.header);
 						},
+						//facebook_p2p_action/product/modifyProduct
 						// 删除产品
 						delProduct : function($str) {
 							return $http.post(option.url.api_product
