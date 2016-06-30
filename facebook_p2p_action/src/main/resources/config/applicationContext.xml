@@ -21,4 +21,5 @@
 	
 	<import resource="./applicationContext-dataSource.xml"/>
 	
+	<import resource="./applicationContext-cache.xml"/>
 </beans>

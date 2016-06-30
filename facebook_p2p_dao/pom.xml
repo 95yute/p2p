@@ -13,6 +13,14 @@
   		<artifactId>facebook_p2p_domain</artifactId>
   		<version>0.0.1-SNAPSHOT</version>
   	</dependency>
+  	
+  	<dependency>
+  		<groupId>cn.facebook.p2p</groupId>
+  		<artifactId>facebook_p2p_cache</artifactId>
+  		<version>0.0.1-SNAPSHOT</version>
+  	</dependency>
+  	
   </dependencies>
  
+   
 </project>
