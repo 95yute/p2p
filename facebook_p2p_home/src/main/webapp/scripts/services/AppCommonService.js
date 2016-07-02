@@ -251,7 +251,7 @@ angular.module('AppCommonService', ['ngCookies','ui.router'])
             personCenter:function($str){
                 return $http.post(option.url.api_acount+'accountHomepage', $str, option.header);
             },
-            
+            //  facebook_p2p_action/account/accountHomepage
           
             
             //获取用户的账户信息
@@ -333,7 +333,7 @@ angular.module('AppCommonService', ['ngCookies','ui.router'])
             findAllProduct:function(){
             	return $http.post(option.url.api_product+'findAllProduct',option.header);
             }
-	
+            // facebook_p2p_action/product/findAllProduct
         };
     })
     
@@ -362,7 +362,7 @@ angular.module('AppCommonService', ['ngCookies','ui.router'])
             getSafeLevel:function($str){
                 return $http.post(option.url.api_user + 'userSecure', $str, option.header);
             }
-    
+            // facebook_p2p_action/user/userSecure
         }
     })
     

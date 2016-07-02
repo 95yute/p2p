@@ -36,5 +36,4 @@ public class SpringContext implements BeanFactoryAware {
 	public Object getBean(String beanName){
 		return beanFactory.getBean(beanName);
 	}
-	
 }

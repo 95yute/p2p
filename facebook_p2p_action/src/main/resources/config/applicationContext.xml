@@ -22,4 +22,6 @@
 	<import resource="./applicationContext-dataSource.xml"/>
 	
 	<import resource="./applicationContext-cache.xml"/>
+	
+	<bean id="springContext" class="cn.facebook.utils.SpringContext"></bean>
 </beans>

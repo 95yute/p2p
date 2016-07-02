@@ -9,4 +9,8 @@ public interface IUserService {
 	public UserModel findByPhone(String phone);
 
 	public boolean addUser(UserModel user);
+
+	public UserModel login(String username, String pwd);
+
+	public UserModel findById(int userid);
 }

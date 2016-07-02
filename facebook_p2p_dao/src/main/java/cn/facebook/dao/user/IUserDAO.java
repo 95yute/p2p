@@ -9,4 +9,6 @@ public interface IUserDAO extends JpaRepository<UserModel, Integer>{
 	UserModel findByUsername(String username);
 	
 	UserModel findByPhone(String phone);
+
+	UserModel findByUsernameAndPassword(String username, String pwd);
 }

@@ -1,6 +1,10 @@
 package cn.facebook.action.user;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
@@ -13,12 +17,17 @@ import org.springframework.stereotype.Controller;
 import com.opensymphony.xwork2.ModelDriven;
 
 import cn.facebook.action.common.BaseAction;
+import cn.facebook.action.filter.GetHttpResponseHeader;
 import cn.facebook.cache.BaseCacheService;
 import cn.facebook.domain.user.UserModel;
 import cn.facebook.service.user.IUserService;
+import cn.facebook.utils.CommonUtil;
+import cn.facebook.utils.ConfigurableConstants;
 import cn.facebook.utils.FrontStatusConstants;
 import cn.facebook.utils.ImageUtil;
+import cn.facebook.utils.MD5Util;
 import cn.facebook.utils.Response;
+import cn.facebook.utils.TokenUtil;
 
 @Controller
 @Namespace("/user")
@@ -36,6 +45,100 @@ public class UserAction extends BaseAction implements ModelDriven<UserModel>{
 	public UserModel getModel() {
 		return user;
 	}
+	@Action("userSecure")
+	public void userSecure(){
+		//String token = this.getRequest().getHeader("token");
+		String token = GetHttpResponseHeader.getHeadersInfo(this.getRequest());
+		Map<String, Object> hmap = baseCacheService.getHmap(token);
+		int userid = (int) hmap.get("id");
+		UserModel um = userService.findById(userid);
+		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("phoneStatus", um.getPhoneStatus());
+		map.put("realNameStatus", um.getRealNameStatus());
+		map.put("payPwdStatus", um.getPayPwdStatus());
+		map.put("emailStatus", um.getEmailStatus());
+		list.add(map);
+		try {
+			this.getResponse().getWriter().write(Response.build().setStatus(FrontStatusConstants.SUCCESS).setData(list).toJSON());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	@Action("logout")
+	public void logout(){
+		String token = this.getRequest().getHeader("token");
+		baseCacheService.del(token);
+		try {
+			this.getResponse().getWriter().write(Response.build().setStatus(FrontStatusConstants.SUCCESS).toJSON());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	@Action("login")
+	public void login(){
+//		a.	获取请求参数
+		String username = this.getRequest().getParameter("username");
+		String password = this.getRequest().getParameter("password");
+		String signUuid = this.getRequest().getParameter("signUuid");
+		String signCode = this.getRequest().getParameter("signCode");
+//		b.	校验
+	    try {
+	    	if(signCode.isEmpty()||username.isEmpty()||password.isEmpty()||signCode.isEmpty()){
+	    	  this.getResponse().getWriter().write(Response.build().setStatus(FrontStatusConstants.BREAK_DOWN).toJSON());
+	    	  return;
+	    	}
+	    } catch (IOException e) {
+	    	// TODO Auto-generated catch block
+	    	e.printStackTrace();
+		}
+//		c.	判断验证码
+	    String _signCode = baseCacheService.get(signUuid);
+	    	 try {
+	    		 if (!_signCode.equalsIgnoreCase(signCode)){
+	    			 this.getResponse().getWriter().write(Response.build().setStatus(FrontStatusConstants.INPUT_ERROR_OF_VALIDATE_CARD).toJSON());
+	    			 return;
+	    		   }
+	    		 } catch (IOException e) {
+				e.printStackTrace();
+			 }
+	    //------begin----如果输入的是电话号码处理
+	    	 boolean flag = CommonUtil.isMobile(username);
+	    	 if(flag) {
+	    		 UserModel userModel = userService.findByPhone(username);
+	    		 username = userModel.getUsername();
+	    	 } 
+	    //------end----如果输入的是电话号码处理
+//		d.	调用service通过username,password判断用户是否存在
+	    String pwd = MD5Util.md5(username.toLowerCase()+password.toLowerCase());
+	    UserModel um = userService.login(username,pwd);
+			try {
+				if (um == null) {
+					this.getResponse().getWriter().write(Response.build().setStatus(FrontStatusConstants.BREAK_DOWN).toJSON());
+					return;
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		
+//		e.	将用户存储到redis中(就是以前类似于session操作)  generateUserToken该方法根据用户名生成token，并把他放入redis中。
+			String token = generateUserToken(um.getUsername());
+//		f.	向浏览器响应数据
+			
+			try {
+				Map<String, Object> data = new HashMap<String, Object>();
+				data.put("userName", um.getUsername());
+				data.put("id", um.getId());
+				this.getResponse().getWriter().write(Response.build().setStatus(FrontStatusConstants.SUCCESS).setData(data).setToken(token).toJSON());
+				return;
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	}
 	// 注册操作
 		@Action("signup")
 		public void regist() {
@@ -43,12 +146,18 @@ public class UserAction extends BaseAction implements ModelDriven<UserModel>{
 			// 2.有些参数封装不上，例如验证码----必须手动获取
 
 			// 3.完成添加用户操作
+			String pwd = MD5Util.md5(user.getUsername().toLowerCase()+user.getPassword().toLowerCase());
+			user.setPassword(pwd);
 			boolean flag = userService.addUser(user);
 
 			// 4.响应数据
 			try {
 				if (flag) {
-					this.getResponse().getWriter().write(Response.build().setStatus(FrontStatusConstants.SUCCESS).toJSON());
+					String token = generateUserToken(user.getUsername());
+					Map<String, Object> data = new HashMap<String, Object>();
+					data.put("username", user.getUsername());
+					data.put("id", user.getId());
+					this.getResponse().getWriter().write(Response.build().setStatus(FrontStatusConstants.SUCCESS).setData(data).setToken(token).toJSON());
 				} else {
 					this.getResponse().getWriter()
 							.write(Response.build().setStatus(FrontStatusConstants.REGISTER_LOSED).toJSON());
@@ -164,5 +273,39 @@ public class UserAction extends BaseAction implements ModelDriven<UserModel>{
 		
 	}
 
-	
+	public String generateUserToken(String userName) {
+
+		try {
+			// 生成令牌
+			String token = TokenUtil.generateUserToken(userName);// 这个加密操作得到的token中包含了用户名。这个加密是可逆的，也就是说可以从token中解出用户名。
+
+			// 根据用户名获取用户
+			UserModel user = userService.findByUsername(userName);
+			// 将用户信息存储到map中。
+			Map<String, Object> tokenMap = new HashMap<String, Object>();
+			tokenMap.put("id", user.getId());
+			tokenMap.put("userName", user.getUsername());
+			tokenMap.put("phone", user.getPhone());
+			tokenMap.put("userType", user.getUserType());
+			tokenMap.put("payPwdStatus", user.getPayPwdStatus());
+			tokenMap.put("emailStatus", user.getEmailStatus());
+			tokenMap.put("realName", user.getRealName());
+			tokenMap.put("identity", user.getIdentity());
+			tokenMap.put("realNameStatus", user.getRealNameStatus());
+			tokenMap.put("payPhoneStatus", user.getPhoneStatus());
+
+			baseCacheService.del(token);
+			baseCacheService.setHmap(token, tokenMap); // 将信息存储到redis中
+
+			// 获取配置文件中用户的生命周期，如果没有，默认是30分钟
+			String tokenValid = ConfigurableConstants.getProperty("token.validity", "30");
+			tokenValid = tokenValid.trim();
+			baseCacheService.expire(token, Long.valueOf(tokenValid) * 60);
+
+			return token;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return Response.build().setStatus("-9999").toJSON();
+		}
+	}
 }

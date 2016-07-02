@@ -29,6 +29,8 @@ angular
 				'NavCtrl',
 				function($rootScope, $scope, $state, AuthService, PostService,
 						hmd) {
+					
+					
 					$scope.$state = $state;
 					$rootScope.loginName = '';
 					if (AuthService.isAuthenticated()) {
@@ -81,8 +83,8 @@ angular
 					$scope.username = '';
 					$scope.password = '';
 					// 记住用户名
-					if ($.cookie('xh_Login')) {
-						$scope.username = $.cookie('xh_Login');
+					if ($.cookie('facebook_Login')) {
+						$scope.username = $.cookie('facebook_Login');
 						$scope.ischecked = true;
 					}
 
@@ -135,12 +137,12 @@ angular
 												AuthService.setCookie('uid',
 														res.data.id);
 												if ($scope.ischecked) {
-													$.cookie('xh_Login', uname,
+													$.cookie('facebook_Login', uname,
 															{
 																'expires' : 30
 															});
 												} else {
-													$.removeCookie('xh_Login');
+													$.removeCookie('facebook_Login');
 												}
 
 												$state.go("space.home");
@@ -342,7 +344,8 @@ angular
 					// 注册操作
 					$scope.doReg = function() {
 						//判断数据是否合法：
-						
+						if ($scope.nameIsPass && $scope.phoneIsPass
+								&& $scope.isAgree && yzpassword()){
 						
 						// 得到所有请求参数
 						var data = {
@@ -392,6 +395,7 @@ angular
 										return false;
 									}
 								});
+						}
 					}
 
 					$scope._login = function() {

@@ -42,5 +42,14 @@ public class UserServiceImpl implements IUserService {
 		}
 		return true;
 	}
+	@Override
+	public UserModel login(String username, String pwd) {
+		
+		return userDao.findByUsernameAndPassword(username,pwd);
+	}
+	@Override
+	public UserModel findById(int userid) {
+		return userDao.findOne(userid);
+	}
 
 }
