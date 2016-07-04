@@ -1,18 +1,34 @@
 package cn.facebook.service.email.impl;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 
 import cn.facebook.service.email.IEmailService;
+import cn.facebook.utils.MessageConstants;
 
 @Service
 public class EmailServiceImpl implements IEmailService{
 
+	@Autowired
+	private JmsTemplate jmsTemplate;
+	
+	@Override
+	public void sendEmail(String email, String content) {
+		Map<String, Object> msg = new HashMap<String, Object>();
+		
+		msg.put(MessageConstants.MessageType, MessageConstants.EmailMessage);
+		msg.put(MessageConstants.EmailMessageTo, email);
+		msg.put(MessageConstants.MessageContent, content);
+		jmsTemplate.convertAndSend(msg);
+	}
+
+	/*
+	 原始的发邮件方法：
+	 
 	@Autowired
 	private JavaMailSender mailSender;
 	
@@ -38,5 +54,6 @@ public class EmailServiceImpl implements IEmailService{
 				// 发送邮件
 				mailSender.send(mm);
 	}
-
+	* 
+	 */
 }

@@ -15,4 +15,8 @@ public interface IProductRateDAO extends JpaRepository<ProductEarningRate, Integ
 	@Modifying
 	@Query("delete from ProductEarningRate per where per.productId=?1")
 	void deleteByProId(int proId);
+	
+	@Modifying
+	@Query("from ProductEarningRate per where per.productId=?1")
+	List<ProductEarningRate> findByOne(int pid);
 }
