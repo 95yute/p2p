@@ -142,8 +142,8 @@ angular.module('AppCommonService', ['ngCookies','ui.router'])
             
             //短信验证码发送
             getPhoneCode:function($str){
-                return $http.post(option.url.api_verification+'sendMessage', $str, option.header);
-                // /facebook_p2p_action/verification/sendMessage
+                return $http.post(option.url.api_user+'sendMessage', $str, option.header);
+                // /facebook_p2p_action/user/sendMessage
             },
          
             //短信验证码验证方法
@@ -162,8 +162,8 @@ angular.module('AppCommonService', ['ngCookies','ui.router'])
             
             //实名认证
             authIdentity:function($str){
-                return $http.post(option.url.api_verification+'verifiRealName', $str, option.header);
-                // /facebook_p2p_action/verification/verifiRealName
+                return $http.post(option.url.api_user+'verifiRealName', $str, option.header);
+                // /facebook_p2p_action/user/verifiRealName
             },
             
             //邮箱绑定认证
@@ -325,6 +325,7 @@ angular.module('AppCommonService', ['ngCookies','ui.router'])
             addPhoneAuth:function($str){
                 return $http.post(option.url.api_user + 'addPhone',$str,option.header);  
             },
+            // /facebook_p2p_action/user/addPhone
             //修改手机后绑定
             updatePhone:function($str){
                 return $http.post(option.url.api_user+'addPhone', $str, option.header);

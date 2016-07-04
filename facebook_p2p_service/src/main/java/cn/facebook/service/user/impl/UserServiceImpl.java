@@ -44,12 +44,33 @@ public class UserServiceImpl implements IUserService {
 	}
 	@Override
 	public UserModel login(String username, String pwd) {
-		
-		return userDao.findByUsernameAndPassword(username,pwd);
+		UserModel model = userDao.findByUsernameAndPassword(username,pwd);
+		System.out.println(model);
+		return model;
 	}
 	@Override
 	public UserModel findById(int userid) {
 		return userDao.findOne(userid);
+	}
+	@Override
+	public void updatePhoneStatus(String phone, int userid) {
+		userDao.updatePhoneStatus(phone,userid);
+	}
+	@Override
+	public UserModel findByIdentity(String identity) {
+		return userDao.findByIdentity(identity);
+	}
+	@Override
+	public void updateRealNameStatus(String identity, String realName, int userid) {
+		userDao.updateRealNameStatus(identity, realName,userid);
+	}
+	@Override
+	public void addEmail(String email, int userid) {
+		userDao.addEmail(email,userid);
+	}
+	@Override
+	public void updateEmailStatus(int parseInt) {
+		userDao.addEmailStatus(parseInt);
 	}
 
 }

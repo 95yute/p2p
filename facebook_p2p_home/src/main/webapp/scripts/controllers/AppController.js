@@ -726,7 +726,6 @@ angular
 											$scope.emailStatus = data.emailStatus;
 											$scope.phoneStatus = data.phoneStatus;
 											$scope.realNameStatus = data.realNameStatus;
-											$scope.pwdStatus = data.passwordstatus;
 											$scope.userName = data.username;
 											$scope.authPhone = data.phone;
 											if (flag == 'authrealname'
@@ -917,7 +916,7 @@ angular
 							};
 							PostService.checkPhone(objToStr(data)).success(
 									function(res) {
-										if (res.status == 1) {
+										if (res.status == 67) {
 											$scope.phoneMsg = '该手机号可用!';
 											$scope.reaccept = false;
 										} else if (res.status == 15) {
@@ -933,7 +932,7 @@ angular
 						}
 					}
 					$scope.authPhoneFunction = function() {
-						authPhoneIsUsed($scope.phoneNum);
+						authPhoneIsUsed($scope.authPhone);
 					};
 					$scope.authPhoneFunc = function() {
 						authPhoneIsUsed($scope.newphone);

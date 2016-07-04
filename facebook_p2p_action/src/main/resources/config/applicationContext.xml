@@ -22,6 +22,7 @@
 	<import resource="./applicationContext-dataSource.xml"/>
 	
 	<import resource="./applicationContext-cache.xml"/>
+	<import resource="./applicationContext-email.xml" />
 	
 	<bean id="springContext" class="cn.facebook.utils.SpringContext"></bean>
 </beans>

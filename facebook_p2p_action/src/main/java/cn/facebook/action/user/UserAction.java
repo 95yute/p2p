@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -27,6 +28,7 @@ import cn.facebook.utils.FrontStatusConstants;
 import cn.facebook.utils.ImageUtil;
 import cn.facebook.utils.MD5Util;
 import cn.facebook.utils.Response;
+import cn.facebook.utils.SMSUtils;
 import cn.facebook.utils.TokenUtil;
 
 @Controller
@@ -44,6 +46,130 @@ public class UserAction extends BaseAction implements ModelDriven<UserModel>{
 	@Override
 	public UserModel getModel() {
 		return user;
+	}
+	@Action("verifiRealName")
+	public void verifiRealName(){
+		//0、获取token
+		String token = GetHttpResponseHeader.getHeadersInfo(this.getRequest());
+		Map<String, Object> hmap = baseCacheService.getHmap(token);
+		try {
+			if (hmap == null || hmap.size() == 0) {
+				this.getResponse().getWriter().write(Response.build().setStatus(FrontStatusConstants.NOT_LOGGED_IN).toJSON());
+				return;
+			}
+		//1、获取请求参数：姓名，身份证号
+		String realName = this.getRequest().getParameter("realName");
+		String identity = this.getRequest().getParameter("identity");
+		//2、判断身份证号的真实性
+		// .....
+		//NAME_UNMATCH_PAPER  姓名证件不匹配
+		System.out.println(realName+"-------"+identity);
+		UserModel um = userService.findByIdentity(identity);
+		if(um!=null){
+			//3、判断用户是否已经绑定用户
+			if (um.getRealNameStatus() == 1){
+				this.getResponse().getWriter().write(Response.build().setStatus(FrontStatusConstants.SOMEONE_USE_NOW).toJSON());
+				return;
+			}
+		}
+				//4、没有绑定进行绑定操作
+				int userid = (int) hmap.get("id");
+				userService.updateRealNameStatus(identity,realName,userid);
+				this.getResponse().getWriter().write(Response.build().setStatus(FrontStatusConstants.SUCCESS).toJSON());
+				//5、响应
+				} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	}
+	@Action("addPhone")
+	public void addPhone(){
+		//0、获取token
+		String token = GetHttpResponseHeader.getHeadersInfo(this.getRequest());
+		Map<String, Object> hmap = baseCacheService.getHmap(token);
+		try {
+			if (hmap == null || hmap.size() == 0) {
+				this.getResponse().getWriter().write(Response.build().setStatus(FrontStatusConstants.NOT_LOGGED_IN).toJSON());
+				return;
+			}
+		//1、获取请求参数：手机号，验证码
+		String phone = this.getRequest().getParameter("phone");
+		String phoneCode = this.getRequest().getParameter("phoneCode");
+		//2、判断验证码是否正确
+		String _phoneCode = baseCacheService.get(phone);
+				if (!_phoneCode.equals(phoneCode)) {
+					   this.getResponse().getWriter().write(Response.build().setStatus(FrontStatusConstants.INPUT_ERROR_OF_VALIDATE_CARD).toJSON());
+					   return;
+					}
+				UserModel um = userService.findByPhone(phone);
+				//3、判断用户是否已经绑定用户
+				if (um.getPhoneStatus() == 1){
+					this.getResponse().getWriter().write(Response.build().setStatus(FrontStatusConstants.MOBILE_ALREADY_REGISTER).toJSON());
+					return;
+				}
+				//4、没有绑定进行绑定操作
+				int userid = (int) hmap.get("id");
+				userService.updatePhoneStatus(phone,userid);
+				this.getResponse().getWriter().write(Response.build().setStatus(FrontStatusConstants.SUCCESS).toJSON());
+				//5、响应
+				} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	}
+	//生成验证码，存到redis,发送到手机
+	@Action("sendMessage")
+	public void sendMessage(){
+		//1、获得令牌，
+		String token = GetHttpResponseHeader.getHeadersInfo(this.getRequest());
+		Map<String, Object> hmap = baseCacheService.getHmap(token);
+		
+			try {
+				//如果没有令牌，则说明没有登录
+				if(hmap == null || hmap.size() == 0) {
+				     this.getResponse().getWriter().write(Response.build().setStatus(FrontStatusConstants.NOT_LOGGED_IN).toJSON());
+				     return;
+				}
+				//2、获得手机号码
+				String phone = this.getRequest().getParameter("phone");
+				//3、获得验证码
+				String phoneCode = RandomStringUtils.randomNumeric(4);
+				//4、发送的信息
+				String sendMsg = "P2P手机认证操作，请在30分钟内录入验证码:" + phoneCode;
+				System.out.println(sendMsg);
+				//5、发送
+				//SMSUtils.SendSms(phone, sendMsg);
+				//6、存到redis中
+				baseCacheService.set(phone, phoneCode);
+				baseCacheService.expire(phone, 3 * 60);
+				
+				this.getResponse().getWriter().write(Response.build().setStatus(FrontStatusConstants.SUCCESS).toJSON());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	}
+	@Action("userSecureDetailed")
+	public void userSecureDetailed(){
+		String token = GetHttpResponseHeader.getHeadersInfo(this.getRequest());
+		Map<String, Object> hmap = baseCacheService.getHmap(token);
+		int userid = (int) hmap.get("id");
+		UserModel um = userService.findById(userid);
+		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("phoneStatus", um.getPhoneStatus());
+		map.put("realNameStatus", um.getRealNameStatus());
+		map.put("payPwdStatus", um.getPayPwdStatus());
+		map.put("emailStatus", um.getEmailStatus());
+		map.put("username", um.getUsername());
+		map.put("phone", um.getPhone());
+		list.add(map);
+		try {
+			this.getResponse().getWriter().write(Response.build().setStatus(FrontStatusConstants.SUCCESS).setData(list).toJSON());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	@Action("userSecure")
 	public void userSecure(){
@@ -213,7 +339,7 @@ public class UserAction extends BaseAction implements ModelDriven<UserModel>{
 				if(user == null){
 					this.getResponse().getWriter().write(Response.build().setStatus(FrontStatusConstants.SUCCESS).toJSON());
 				} else {
-					this.getResponse().getWriter().write(Response.build().setStatus(FrontStatusConstants.BREAK_DOWN).toJSON());
+					this.getResponse().getWriter().write(Response.build().setStatus(FrontStatusConstants.MOBILE_ALREADY_REGISTER).toJSON());
 				}
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
