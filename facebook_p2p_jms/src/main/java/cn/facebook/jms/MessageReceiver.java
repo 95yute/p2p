@@ -1,5 +1,4 @@
 package cn.facebook.jms;
-
 import javax.jms.JMSException;
 import javax.jms.MapMessage;
 import javax.jms.Message;
@@ -8,10 +7,8 @@ import javax.jms.MessageListener;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class MessageReceiver implements MessageListener{
-
 	@Autowired
 	private MessageSenderFactory factory;
-	
 	@Override
 	public void onMessage(Message m) {
 		MapMessage mm = (MapMessage) m;
@@ -24,9 +21,7 @@ public class MessageReceiver implements MessageListener{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 	}
-
 	private void processMeaage(MapMessage mm) throws JMSException {
 		String type = mm.getString("type");
 		MessageSender messageSender = factory.getMessageSender(type);

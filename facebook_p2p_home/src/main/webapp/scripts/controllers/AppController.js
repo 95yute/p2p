@@ -2811,6 +2811,7 @@ angular
 					// 获取市级列表
 					$scope.citys = '';
 					$scope.getCity = function(type) {
+						
 						if (type != 'auto') {
 							$scope.cityNo = '';
 							$scope.areaNo = '';
@@ -2821,6 +2822,7 @@ angular
 						PostService.getCity(objToStr(data)).success(
 								function(res) {
 									if (res.status == 1) {
+										$scope.areas = '';
 										$scope.citys = res.data;
 									} else {
 										$scope.citys = '';
@@ -2829,6 +2831,7 @@ angular
 					};
 					$scope.areas = '';
 					$scope.getArea = function(type) {
+						$scope.areas = '';
 						if (type != 'auto') {
 							$scope.areaNo = '';
 						}

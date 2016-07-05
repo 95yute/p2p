@@ -216,7 +216,7 @@ angular.module('AppCommonService', ['ngCookies','ui.router'])
             getCashInfo:function($str){
                 return $http.post(option.url.api_bankcardInfo+'findBankInfoByUsername', $str, option.header);
             },
-            
+            // facebook_p2p_action/bankCardInfo/
             //获取银行信息
             getAllBank:function($str){
                 return $http.post(option.url.api_bankcardInfo+'findAllBanks', $str, option.header);
@@ -236,12 +236,12 @@ angular.module('AppCommonService', ['ngCookies','ui.router'])
             getCity:function($str){
                 return $http.post(option.url.api_bankcardInfo+'findCity', $str, option.header);
             },
-            
+            // facebook_p2p_action/bankCardInfo/
             //银行卡绑定
             addBankCardInfo:function($str){
                 return $http.post(option.url.api_bankcardInfo+'addBankCardInfo', $str, option.header);
             },              
-            
+            // facebook_p2p_action/bankCardInfo/addBankCardInfo
             //保存借款信息
             lendSuccess:function($str){
                 return $http.post('/P2P_action/userLoan/saveUserLoan', $str, option.header);
