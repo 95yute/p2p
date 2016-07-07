@@ -345,7 +345,7 @@ angular
 					$scope.doReg = function() {
 						//判断数据是否合法：
 						if ($scope.nameIsPass && $scope.phoneIsPass
-								&& $scope.isAgree && yzpassword()){
+								&& $scope.isAgree && $scope.yzpassword()){
 						
 						// 得到所有请求参数
 						var data = {
@@ -2044,19 +2044,19 @@ angular
 
 					$scope.phoneAuth = 0;
 					$scope.IDAuth = 0;
-					PostService.getAbleAccout().success(function(res) {
-						if (res.status == 1) {
-							var _data = res.data;
-							$scope.userid = _data.userId;
-						} else if (res.status == 15) {
-							AuthService.clearUserInfo();
-							$state.go('login', {}, {
-								reload : true
-							});
-						} else {
-							hmd.popupErrorInfo(res.status);
-						}
-					});
+//					PostService.getAbleAccout().success(function(res) {
+//						if (res.status == 1) {
+//							var _data = res.data;
+//							$scope.userid = _data.userId;
+//						} else if (res.status == 15) {
+//							AuthService.clearUserInfo();
+//							$state.go('login', {}, {
+//								reload : true
+//							});
+//						} else {
+//							hmd.popupErrorInfo(res.status);
+//						}
+//					});
 
 					$scope.is_phone_pass = true;
 					$scope.is_auth_pass = true;
@@ -2316,7 +2316,7 @@ angular
 							OpenWindow.document
 									.write('<script>var channels = "'
 											+ $scope.selectProvider
-											+ '";$.ajax({type: "POST",url: "/itcast_p2p_action/charges/charge", data: {"channel":"'
+											+ '";$.ajax({type: "POST",url: "/facebook_p2p_action/charges/charge", data: {"channel":"'
 											+ $scope.selectProvider
 											+ '","chargeBank":"'
 											+ $scope.selectBankId

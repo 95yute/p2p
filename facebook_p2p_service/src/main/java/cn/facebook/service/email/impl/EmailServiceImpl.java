@@ -6,11 +6,13 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import cn.facebook.service.email.IEmailService;
 import cn.facebook.utils.MessageConstants;
 
 @Service
+@Transactional
 public class EmailServiceImpl implements IEmailService{
 
 	@Autowired
