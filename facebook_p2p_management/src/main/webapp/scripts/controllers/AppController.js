@@ -446,7 +446,7 @@ angular.module('AppController', [])
 				function($scope, AuthService, FileUploader, hmd) {
 					
 					var uploader = $scope.uploader = new FileUploader({
-						url : '/itcast_p2p_action/creditor/upload'
+						url : '/facebook_p2p_action/creditor/upload'
 					});
 
 					uploader.filters
