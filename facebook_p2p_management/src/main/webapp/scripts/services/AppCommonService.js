@@ -109,7 +109,7 @@ angular
 							return $http.post(option.url.api_product
 									+ 'modifyProduct', $str, option.header);
 						},
-						//facebook_p2p_action/product/modifyProduct
+						// facebook_p2p_action/product/modifyProduct
 						// 删除产品
 						delProduct : function($str) {
 							return $http.post(option.url.api_product
@@ -128,7 +128,18 @@ angular
 									+ 'addCreditor', $str, option.header);
 
 							// /facebook_p2p_action/creditor/addCreditor
-						}
+						},
+						// 债权查询
+						checkCredit : function($str) {
+							return $http.post(option.url.api_creditor
+									+ 'getCreditorlist', $str, option.header);
+						},
+						// facebook_p2p_action/creditor/getCreditorlist
+						 // 债权审核
+			            verifyCredit:function($str){
+			                return $http.post(option.url.api_creditor + 'checkCreditor', $str, option.header);
+			            }
+						// facebook_p2p_action/creditor/
 					}
 				})
 

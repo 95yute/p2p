@@ -3,6 +3,9 @@ package cn.facebook.action.creditor;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
@@ -15,6 +18,7 @@ import com.opensymphony.xwork2.ModelDriven;
 
 import cn.facebook.action.common.BaseAction;
 import cn.facebook.domain.creditor.CreditorModel;
+import cn.facebook.domain.creditor.CreditorSumModel;
 import cn.facebook.service.creditor.ICreditorService;
 import cn.facebook.util.constant.ClaimsType;
 import cn.facebook.utils.FrontStatusConstants;
@@ -35,6 +39,93 @@ public class CreditorAction extends BaseAction implements ModelDriven<CreditorMo
 	
 	@Autowired
 	private ICreditorService creditorService;
+	
+	@Action("checkCreditor")
+	public void checkCreditor() {
+		String ids = this.getRequest().getParameter("ids");
+		creditorService.checkCreditor(ids);
+		try {
+			this.getResponse().getWriter().write(Response.build().setStatus("1").toJSON());
+			return;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	//债权查询
+	@Action("getCreditorlist")
+	public void getCreditorlist(){
+			this.getResponse().setCharacterEncoding("utf-8");
+		//1、获取请求参数
+	
+              String dDebtNo = this.getRequest().getParameter("dDebtNo");//标的编号
+              String dContractNo = this.getRequest().getParameter("dContractNo"); //借款ID
+              String dDebtTransferredDateStart = this.getRequest().getParameter("dDebtTransferredDateStart");//债权转入日期
+              String dDebtTransferredDateEnd = this.getRequest().getParameter("dDebtTransferredDateEnd");//债权转出日期
+              String dDebtStatus = this.getRequest().getParameter("dDebtStatus");//债权状态
+              String dMatchedStatus = this.getRequest().getParameter("dMatchedStatus");//债权匹配状态
+              String offsetnum = this.getRequest().getParameter("offsetnum");
+              
+              Map<String, Object> map = new HashMap<String, Object>();
+              if (StringUtils.isNotEmpty(dDebtNo)) {
+            	  map.put("dDebtNo", dDebtNo.trim());
+              }
+              if (StringUtils.isNotEmpty(dContractNo)) {
+            	  map.put("dContractNo", dContractNo.trim());
+              }
+              if (StringUtils.isNotEmpty(dDebtTransferredDateStart)) {
+            	  map.put("dDebtTransferredDateStart", dDebtTransferredDateStart.trim());
+              }
+              if (StringUtils.isNotEmpty(dDebtTransferredDateEnd)) {
+            	  map.put("dDebtTransferredDateEnd", dDebtTransferredDateEnd.trim());
+              }
+              if (StringUtils.isNotEmpty(dDebtStatus)) {
+            	  map.put("dDebtStatus", Integer.parseInt(dDebtStatus.trim()));
+              }
+              if (StringUtils.isNotEmpty(dMatchedStatus)) {
+            	  map.put("dMatchedStatus", Integer.parseInt(dMatchedStatus.trim()));
+              }
+              if (StringUtils.isNotEmpty(offsetnum)) {
+            	  map.put("offsetnum", Integer.parseInt(offsetnum.trim()));
+              }
+              //查询债券信息
+              List<CreditorModel> list = creditorService.findCreditorList(map);
+              for (CreditorModel cm:list){
+            	  switch(cm.getDebtStatus()){
+            	  	case 11301: cm.setDebtStatusDesc("未审核");break;
+            	  	case 11302: cm.setDebtStatusDesc("已审核");break;
+            	  	case 11303: cm.setDebtStatusDesc("正常还款");break;
+            	  	case 11304: cm.setDebtStatusDesc("已结清");break;
+            	  	case 11305: cm.setDebtStatusDesc("提前结清");break;
+            	  	case 11306: cm.setDebtStatusDesc("结算失败");
+            	  }
+            	  switch(cm.getMatchedStatus()){
+            	  	case 11401: cm.setDebtStatusDesc("部分匹配");break;
+            	  	case 11402: cm.setDebtStatusDesc("完全匹配");break;
+            	  	case 11403: cm.setDebtStatusDesc("未匹配");
+            	  }
+            	  
+              }
+              
+              //查询债券统计信息
+              Object[] cmsSum = creditorService.findCreditorListSum(map);
+              CreditorSumModel csum = new CreditorSumModel();
+              csum.setdIdCount(Integer.parseInt(cmsSum[0].toString()));
+              csum.setdDebtMoneySum(Double.parseDouble(cmsSum[1].toString()));
+              csum.setdAvailableMoneySum(Double.parseDouble(cmsSum[2].toString()));
+		//2、验证请求参数
+		//3、调用service完成查询操作
+		//4、响应数据到浏览器
+             Map<String, Object> data = new HashMap<String, Object>();
+             data.put("date", list);
+             data.put("datasum", csum);
+             try {
+				this.getResponse().getWriter().write(Response.build().setStatus("1").setData(data).toJSON());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	}
 	
 	@Action("addCreditor")
 	public void addCreditor(){
