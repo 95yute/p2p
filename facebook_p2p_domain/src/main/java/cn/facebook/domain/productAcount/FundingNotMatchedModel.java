@@ -31,6 +31,9 @@ public class FundingNotMatchedModel {
 	@Column(name="f_not_matched_money")
 	private Double fNotMatchedMoney = 0.0;	//待匹配金额
 	
+	@Column(name="f_matched_money")
+	private Double fMatchedMoney = 0.0;	//已匹配金额
+	
 	@Column(name="f_founding_type")
 	private int fFoundingType = 0;	//资金类型
 	
@@ -48,6 +51,14 @@ public class FundingNotMatchedModel {
 	
 	public FundingNotMatchedModel() {
 		
+	}
+	
+	public Double getfMatchedMoney() {
+		return fMatchedMoney;
+	}
+
+	public void setfMatchedMoney(Double fMatchedMoney) {
+		this.fMatchedMoney = fMatchedMoney;
 	}
 	
 	public FundingNotMatchedModel(FundingNotMatchedModel invest) {

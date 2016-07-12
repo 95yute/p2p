@@ -138,8 +138,22 @@ angular
 						 // 债权审核
 			            verifyCredit:function($str){
 			                return $http.post(option.url.api_creditor + 'checkCreditor', $str, option.header);
-			            }
+			            },
 						// facebook_p2p_action/creditor/
+			            
+			            selectWaitMoney : function($str) {
+							return $http
+									.post(
+											"/facebook_p2p_action/accountLog/selectWaitMoney",
+											$str, option.header)
+						},
+						// 开始匹配
+						startMatchByManually : function($str) {
+							return $http
+									.post(
+											'/facebook_p2p_action/match/startMatchByManually',
+											$str, option.header);
+						}
 					}
 				})
 

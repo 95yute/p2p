@@ -836,3 +836,79 @@ angular.module('AppController', [])
 					};
 					onload();
 				})
+				// 撮合操作
+		// 待匹配资金队列
+		.controller(
+				'matchfundqueueCtrl',
+				function($scope, $state, AuthService, PostService, hmd) {
+					var str = '';
+
+					$scope.totalItems = 0;
+					$scope.maxSize = 10;
+					$scope.currentPage = 1;
+					$scope.itemsPerPage = 20;
+					var manage_count = $('#manage_count');
+					var manage_sum = $('#manage_sum');
+					// 查询待匹配资金队列条件组装
+					function getDataByParams(pageNo) {
+						$scope.currentPage = pageNo;
+						var username = $('#username').val();
+						var button_query = $('#button_query');
+						var pSerialNo = $('#investserial').val();
+						var endDate = $('#endDate').val();
+						var productName = $('#productName').find(
+								'option:selected').attr('value');
+						var investType = $('#investType').find(
+								'option:selected').attr('value');
+						var str = 'userName=' + username + '&pSerialNo='
+								+ pSerialNo + '&endDate=' + endDate
+								+ '&productName=' + productName
+								+ '&investType=' + investType;
+
+						checkDataByPostService(str, pageNo);
+
+					}
+					;
+					// 查询待匹配资金队列
+					function checkDataByPostService(param, page) {
+						PostService
+								.selectWaitMoney(param + "&page=" + page)
+								.success(
+										function(response) {
+											if (response.status == 1) {
+												var data = response.data;
+												$scope.userList = data.listMatch;
+												$scope.totalItems = manage_count
+														.html().replace(/\s/g,
+																'');
+												manage_count
+														.html(data.waitMatchCount.count);
+												manage_sum
+														.html((+data.waitMatchCount.sum)
+																.toFixed(2));
+											} else {
+												hmd
+														.popupErrorInfo(response.status);
+											}
+										});
+
+					}
+					;
+
+					function init_query() {
+						checkDataByPostService("", 1);
+					}
+					init_query();
+					//$scope.queryData = getDataByParams(1);
+					// 开始匹配
+					$scope.startmatching = function() {
+						PostService.startMatchByManually().success(
+								function(response) {
+									hmd.popupErrorInfo(response.status);
+								}).error(function(response) {
+							hmd.popupErrorInfo(response.status);
+						});
+
+					};
+
+				})

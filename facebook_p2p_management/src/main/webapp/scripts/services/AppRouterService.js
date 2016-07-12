@@ -67,6 +67,12 @@ angular.module('AppRouterService', [ 'ui.router' ])
 				templateUrl : './views/rights/multiple.html',
 				controller : 'multiple'
 			})
+			// 待匹配资金队列
+			.state("home.matching_fund_queue", {
+				url : "/matching_fund_queue",
+				templateUrl : './views/match_manage/matching_fund_queue.html',
+				controller : 'matchfundqueueCtrl'
+			})
 
 		}).config(function($sceProvider) {
 	$sceProvider.enabled(false);

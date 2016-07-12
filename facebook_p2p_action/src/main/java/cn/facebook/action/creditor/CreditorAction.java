@@ -90,22 +90,54 @@ public class CreditorAction extends BaseAction implements ModelDriven<CreditorMo
               }
               //查询债券信息
               List<CreditorModel> list = creditorService.findCreditorList(map);
-              for (CreditorModel cm:list){
-            	  switch(cm.getDebtStatus()){
-            	  	case 11301: cm.setDebtStatusDesc("未审核");break;
-            	  	case 11302: cm.setDebtStatusDesc("已审核");break;
-            	  	case 11303: cm.setDebtStatusDesc("正常还款");break;
-            	  	case 11304: cm.setDebtStatusDesc("已结清");break;
-            	  	case 11305: cm.setDebtStatusDesc("提前结清");break;
-            	  	case 11306: cm.setDebtStatusDesc("结算失败");
-            	  }
-            	  switch(cm.getMatchedStatus()){
-            	  	case 11401: cm.setDebtStatusDesc("部分匹配");break;
-            	  	case 11402: cm.setDebtStatusDesc("完全匹配");break;
-            	  	case 11403: cm.setDebtStatusDesc("未匹配");
-            	  }
-            	  
-              }
+//              for (CreditorModel cm:list){
+//            	  switch(cm.getDebtStatus()){
+//            	  	case 11301: cm.setDebtStatusDesc("未审核");break;
+//            	  	case 11302: cm.setDebtStatusDesc("已审核");break;
+//            	  	case 11303: cm.setDebtStatusDesc("正常还款");break;
+//            	  	case 11304: cm.setDebtStatusDesc("已结清");break;
+//            	  	case 11305: cm.setDebtStatusDesc("提前结清");break;
+//            	  	case 11306: cm.setDebtStatusDesc("结算失败");
+//            	  }
+//            	  switch(cm.getMatchedStatus()){
+//            	  	case 11401: cm.setDebtStatusDesc("部分匹配");break;
+//            	  	case 11402: cm.setDebtStatusDesc("完全匹配");break;
+//            	  	case 11403: cm.setDebtStatusDesc("未匹配");
+//            	  }
+//            	  
+//              }
+              for (CreditorModel cm : list) {
+      			if (cm.getDebtStatus() == 11301) {
+      				cm.setDebtStatusDesc("未审核");
+      			}
+      			if (cm.getDebtStatus() == 11302) {
+      				cm.setDebtStatusDesc("已审核");
+      			}
+      			if (cm.getDebtStatus() == 11303) {
+      				cm.setDebtStatusDesc("正常还款");
+      			}
+      			if (cm.getDebtStatus() == 11304) {
+      				cm.setDebtStatusDesc("已结清");
+      			}
+      			if (cm.getDebtStatus() == 11305) {
+      				cm.setDebtStatusDesc("提前结清");
+      			}
+      			if (cm.getDebtStatus() == 11306) {
+      				cm.setDebtStatusDesc("结算失败");
+      			}
+
+      			if (cm.getMatchedStatus() == 11401) {
+      				cm.setMatchedStatusDesc("部分匹配");
+      			}
+      			if (cm.getMatchedStatus() == 11402) {
+      				cm.setMatchedStatusDesc("完全匹配");
+      			}
+      			if (cm.getMatchedStatus() == 11403) {
+      				cm.setMatchedStatusDesc("未匹配");
+      			}
+
+      		}
+              
               
               //查询债券统计信息
               Object[] cmsSum = creditorService.findCreditorListSum(map);

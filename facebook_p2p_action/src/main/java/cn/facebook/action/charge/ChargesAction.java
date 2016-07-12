@@ -117,7 +117,7 @@ public class ChargesAction extends BaseAction {
 			
 			pa.setpProductId(product.getProId());
 			pa.setpProductName(product.getProductName());
-			pa.setpUid((long)uam.getId());
+			pa.setpUid((long) userid);
 			pa.setpSerialNo("TZNO"+randomNum);//投资编号
 			pa.setpBeginDate(date);
 			pa.setpEndDate(c.getTime());
