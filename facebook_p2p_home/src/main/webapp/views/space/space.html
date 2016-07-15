@@ -34,7 +34,7 @@
                     <a rel="title" class="ico2" href="javascript:void(0);">投资管理</a>
                     <ul class="subMenu" ng-class="{'show':menu.menu == 'investManage'}">
                         <li><a ui-sref="space.record.dealAll" ng-class="{'hover':menu.childMenu == 'record'}" >交易记录</a></li>
-                        <li><a ui-sref="space.myinvest.buying" ng-class="{'hover':menu.childMenu == 'myinvest'}" >我的投资</a></li>
+                        <li><a ng-class="{'hover':menu.childMenu == 'myinvest'}" ui-sref="space.myinvest.buying">我的投资</a></li>
                     </ul>
                 </li>
                 <li ng-class="{'cur':menu.menu == 'rewardManage'}">

@@ -280,7 +280,7 @@ angular.module('AppCommonService', ['ngCookies','ui.router'])
             getProductAccountBuying:function($str){
                 return $http.post(option.url.api_charges+'ProductAccountBuying', $str, option.header);
             },
-            
+            // /facebook_p2p_action/charges/ProductAccountBuying
           
             
             //交易记录

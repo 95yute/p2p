@@ -6,10 +6,12 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 
 import cn.facebook.action.common.BaseAction;
@@ -60,6 +62,43 @@ public class ChargesAction extends BaseAction {
 	private IProductAccountService productAccountService;
 	@Autowired
 	private IExpectedReturnService expectedReturnService;
+	
+	@Action("ProductAccountBuying")
+	public void ProductAccountBuying() {
+		this.getResponse().setCharacterEncoding("utf-8");
+		String token = GetHttpResponseHeader.getHeadersInfo(this.getRequest());
+		try {
+			if (StringUtils.isBlank(token)) {
+				this.getResponse().getWriter()
+						.write(Response.build().setStatus(FrontStatusConstants.NULL_TOKEN).toJSON());
+				return;
+			}
+			Map<String, Object> hmap = baseCacheService.getHmap(token);
+			if (hmap == null || hmap.size() == 0) {
+				this.getResponse().getWriter()
+						.write(Response.build().setStatus(FrontStatusConstants.NOT_LOGGED_IN).toJSON());
+				return;
+			}
+			String _currentPage = this.getRequest().getParameter("currentPage");
+			if (StringUtils.isBlank(_currentPage)) {
+				this.getResponse().getWriter()
+						.write(Response.build().setStatus(FrontStatusConstants.PARAM_VALIDATE_FAILED).toJSON());
+				return;
+			}
+			int currentPage = Integer.parseInt(_currentPage);
+			int status = Integer.parseInt(this.getRequest().getParameter("status"));
+			String startDate = this.getRequest().getParameter("startDate");
+			String endDate = this.getRequest().getParameter("endDate");
+			
+			int uid = (int) hmap.get("id");
+			
+			Page<ProductAccount> page = productAccountService.findProductAccountByPage(currentPage, 2,uid,status,startDate,endDate);
+			this.getResponse().getWriter().write(Response.build().setStatus("1").setData(page.getContent())
+					.setTotal("" + page.getTotalElements()).toJSON());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	@Action("addMayTake")
 	public void addMayTake() {
