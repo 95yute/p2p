@@ -400,7 +400,6 @@ public class UserAction extends BaseAction implements ModelDriven<UserModel>{
 	}
 
 	public String generateUserToken(String userName) {
-
 		try {
 			// 生成令牌
 			String token = TokenUtil.generateUserToken(userName);// 这个加密操作得到的token中包含了用户名。这个加密是可逆的，也就是说可以从token中解出用户名。
@@ -421,7 +420,7 @@ public class UserAction extends BaseAction implements ModelDriven<UserModel>{
 			tokenMap.put("payPhoneStatus", user.getPhoneStatus());
 
 			baseCacheService.del(token);
-			baseCacheService.setHmap(token, tokenMap); // 将信息存储到redis中
+			baseCacheService.setHmap(token, tokenMap); // 将信息存储到redis中,也就说，登录时，redis中存储的是以用户名加密后的信息为键，以用户信息为值，存储的map
 
 			// 获取配置文件中用户的生命周期，如果没有，默认是30分钟
 			String tokenValid = ConfigurableConstants.getProperty("token.validity", "30");

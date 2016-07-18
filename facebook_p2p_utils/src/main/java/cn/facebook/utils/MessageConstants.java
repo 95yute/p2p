@@ -9,7 +9,7 @@ public class MessageConstants {
 	public static final String EmailMessageCC = "cc";
 	public static final String EmailMessageBCC = "bcc";
 	public static final String EmailMessageTitle = "title";
-	public static final String MessageContent = "mc";
+	public static final String MessageContent = "content";
 
 	public static final String SMSMessage = "sms";
 	public static final String SMSNumbers = "numbers";
